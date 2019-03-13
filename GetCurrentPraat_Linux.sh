@@ -8,26 +8,29 @@
 # still needs proper error handling
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 
+# Get the local version of Praat
+PRAAT_VERSION=`./praat --version`
+PRAAT_VERSION=`perl -e '$ARGV[0] =~ m/(\d+)\.(\d+)\.(\d+)/; print "$1$2$3"' "$PRAAT_VERSION"`
+
 # Grab the download page
 wget http://www.fon.hum.uva.nl/praat/download_linux.html
 
 # Parse out the current Praat version
 PRAAT_LINE=`grep -P -m 1 -o '64-bit edition: <a href=praat\d+_linux64.tar.gz>' download_linux.html`
-CURRENT_PRAAT_VERSION=`perl -e '$ARGV[0] =~ s/^64-bit edition: <a href=//; $ARGV[0] =~ s/_linux64\.tar\.gz>$//; print $ARGV[0]' "$PRAAT_LINE"`
+CURRENT_PRAAT_VERSION=`perl -e '$ARGV[0] =~ s/^64-bit edition: <a href=praat(\d+)_linux64\.tar\.gz>$/$1/; $ARGV[0] =~ s///; print $ARGV[0]' "$PRAAT_LINE"`
 rm download_linux.html
 
 # If the available version is the same, bail.
-if [[ "$CURRENT_PRAAT_VERSION" == "PRAAT_VERSION" ]]; then
-	echo "Your installed version is already current."
+if [[ $CURRENT_PRAAT_VERSION == $PRAAT_VERSION ]]; then
+	echo "Your installed version is already current: $PRAAT_VERSION"
 
 # Otherwise, grab the Praat tarball
 else
-	wget http://www.fon.hum.uva.nl/praat/"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
+	wget http://www.fon.hum.uva.nl/praat/praat"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
 	# Untar
-	tar xvfz "$CURRENT_PRAAT_VERSION"_linux64.tar.gz
+	tar xvfz praat"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
 	echo "Upgraded Praat $PRAAT_VERSION to $CURRENT_PRAAT_VERSION . Enjoy!"
-	PRAAT_VERSION="$CURRENT_PRAAT_VERSION"
 
 	# Clean up
-	rm "$CURRENT_PRAAT_VERSION"_linux64.tar.gz
+	rm praat"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
 fi
