@@ -4,8 +4,20 @@
 # executable in the current directory.
 
 # fanagled 8/2013 by dan brenner
-# v1.1 10/2013 db
+# v1.2 3/2019 db
 # still needs proper error handling
+
+# This software is provided with only the guarantee
+# that I've tried my best to create good code for
+# the purpose. Please send me comments, bug reports,
+# feature requests, suggestions.
+
+# This software is provided under GNU General Public License:
+#	https://www.gnu.org/licenses/gpl.html
+# which means anyone is free to mess with this however
+# they please, for any purpose, be it personal, commercial,
+# poetic, arboreal, or whathaveyou.
+# All derivative software must also bear this licensing.
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 
 # Get the local version of Praat
