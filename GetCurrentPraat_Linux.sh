@@ -26,6 +26,10 @@ PRAAT_VERSION=`perl -e '$ARGV[0] =~ m/(\d+)\.(\d+)\.(\d+)/; print "$1$2$3"' "$PR
 
 # Grab the download page
 wget http://www.fon.hum.uva.nl/praat/download_linux.html
+if [[ $? -ne 0 ]]; then
+	echo "Couldn't access the download page. Internet connection issue?"
+	exit 0
+fi
 
 # Parse out the current Praat version
 PRAAT_LINE=`grep -P -m 1 -o '64-bit edition: <a href=praat\d+_linux64.tar.gz>' download_linux.html`
