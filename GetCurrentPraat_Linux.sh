@@ -21,11 +21,11 @@
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 
 # Get the local version of Praat
-PRAAT_VERSION=`./praat --version`
+PRAAT_VERSION=`~/Praat/praat --version`
 PRAAT_VERSION=`perl -e '$ARGV[0] =~ m/(\d+)\.(\d+)\.(\d+)/; print "$1$2$3"' "$PRAAT_VERSION"`
 
 # Grab the download page
-wget http://www.fon.hum.uva.nl/praat/download_linux.html
+wget -q -o /dev/null http://www.fon.hum.uva.nl/praat/download_linux.html
 if [[ $? -ne 0 ]]; then
 	echo "Couldn't access the download page. Internet connection issue?"
 	exit 0
@@ -38,7 +38,7 @@ rm download_linux.html
 
 # If the available version is the same, bail.
 if [[ $CURRENT_PRAAT_VERSION == $PRAAT_VERSION ]]; then
-	echo "Your installed version is already current: $PRAAT_VERSION"
+	echo "Your installed version is current: $PRAAT_VERSION"
 
 # Otherwise, grab the Praat tarball
 else
