@@ -5,7 +5,6 @@
 
 # fanagled 8/2013 by dan brenner
 # v1.2 3/2019 db
-# still needs proper error handling
 
 # This software is provided with only the guarantee
 # that I've tried my best to create good code for
@@ -21,7 +20,7 @@
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 
 # Get the local version of Praat
-PRAAT_VERSION=`~/Praat/praat --version`
+PRAAT_VERSION=`./praat --version`
 PRAAT_VERSION=`perl -e '$ARGV[0] =~ m/(\d+)\.(\d+)\.(\d+)/; print "$1$2$3"' "$PRAAT_VERSION"`
 
 # Grab the download page
