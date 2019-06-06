@@ -21,6 +21,8 @@
 
 # Get the local version of Praat
 PRAAT_VERSION=`./praat --version`
+# Of the form:
+# "Praat 6.0.54 (June 6 2019)"
 PRAAT_VERSION=${PRAAT_VERSION// (*/} # drop the date element
 PRAAT_VERSION=${PRAAT_VERSION//[!0-9]/} # grab only the version digits
 
