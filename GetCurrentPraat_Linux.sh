@@ -21,7 +21,8 @@
 
 # Get the local version of Praat
 PRAAT_VERSION=`./praat --version`
-PRAAT_VERSION=`perl -e '$ARGV[0] =~ m/(\d+)\.(\d+)\.(\d+)/; print "$1$2$3"' "$PRAAT_VERSION"`
+PRAAT_VERSION=${PRAAT_VERSION// (*/} # drop the date element
+PRAAT_VERSION=${PRAAT_VERSION//[!0-9]/} # grab only the version digits
 
 # Grab the download page
 wget -q -o /dev/null http://www.fon.hum.uva.nl/praat/download_linux.html
@@ -32,20 +33,27 @@ fi
 
 # Parse out the current Praat version
 PRAAT_LINE=`grep -P -m 1 -o '64-bit edition: <a href=praat\d+_linux64.tar.gz>' download_linux.html`
-CURRENT_PRAAT_VERSION=`perl -e '$ARGV[0] =~ s/^64-bit edition: <a href=praat(\d+)_linux64\.tar\.gz>$/$1/; $ARGV[0] =~ s///; print $ARGV[0]' "$PRAAT_LINE"`
+# the line contains something of the form:
+# "64-bit edition: <a href=praat6054_linux64.tar.gz>"
+PRAAT_LINE=${PRAAT_LINE//_*/} # zap "_linux64..." blah blah
+CURRENT_PRAAT_VERSION=${PRAAT_LINE//*praat/} # squash blah blah "...praat"
+unset PRAAT_LINE
+
 rm download_linux.html
 
 # If the available version is the same, bail.
 if [[ $CURRENT_PRAAT_VERSION == $PRAAT_VERSION ]]; then
 	echo "Your installed version is current: $PRAAT_VERSION"
-
-# Otherwise, grab the Praat tarball
 else
-	wget http://www.fon.hum.uva.nl/praat/praat"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
+	# Otherwise, grab the Praat tarball
+	TARBALL="praat${CURRENT_PRAAT_VERSION}_linux64.tar.gz"
+	wget http://www.fon.hum.uva.nl/praat/$TARBALL
+
 	# Untar
-	tar xvfz praat"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
+	tar xvfz $TARBALL
 	echo "Upgraded Praat $PRAAT_VERSION to $CURRENT_PRAAT_VERSION . Enjoy!"
 
 	# Clean up
-	rm praat"$CURRENT_PRAAT_VERSION"_linux64.tar.gz
+	rm $TARBALL
+	unset PRAAT_VERSION CURRENT_PRAAT_VERSION TARBALL
 fi
