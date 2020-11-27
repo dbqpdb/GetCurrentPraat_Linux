@@ -27,14 +27,16 @@ PRAAT_VERSION=${PRAAT_VERSION// (*/} # drop the date element
 PRAAT_VERSION=${PRAAT_VERSION//[!0-9]/} # grab only the version digits
 
 # Grab the download page
-wget -q -o /dev/null http://www.fon.hum.uva.nl/praat/download_linux.html
+wget -q -o /dev/null https://www.fon.hum.uva.nl/praat/download_linux.html
 if [[ $? -ne 0 ]]; then
 	echo "Couldn't access the download page. Internet connection issue?"
 	exit 0
 fi
 
 # Parse out the current Praat version
-PRAAT_LINE=`grep -P -m 1 -o '64-bit edition: <a href=praat\d+_linux64.tar.gz>' download_linux.html`
+# The relevant line looks like:
+# <a href=praat6134_linux64static.tar.gz>praat6134_linux64static.tar.gz</a>
+PRAAT_LINE=`grep -P -m 1 -o '<a href=praat\d+_linux64static.tar.gz>' download_linux.html`
 # the line contains something of the form:
 # "64-bit edition: <a href=praat6054_linux64.tar.gz>"
 PRAAT_LINE=${PRAAT_LINE//_*/} # zap "_linux64..." blah blah
