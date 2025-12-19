@@ -19,12 +19,16 @@
 # All derivative software must also bear this licensing.
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 
-# Get the local version of Praat
-PRAAT_VERSION=`./praat --version`
-# Of the form:
-# "Praat 6.0.54 (June 6 2019)"
-PRAAT_VERSION=${PRAAT_VERSION// (*/} # drop the date element
-PRAAT_VERSION=${PRAAT_VERSION//[!0-9]/} # grab only the version digits
+# Get the local version of Praat if it exists.
+if [[ -f ./praat ]]; then
+	PRAAT_VERSION=$(./praat --version)
+	# "Praat 6.0.54 (June 6 2019)"
+	PRAAT_VERSION=${PRAAT_VERSION// (*/} # drop the date element
+	PRAAT_VERSION=${PRAAT_VERSION//[!0-9]/} # grab only the version digits
+else
+	PRAAT_VERSION="none"
+fi
+
 
 # Grab the download page
 wget -q -o /dev/null https://www.fon.hum.uva.nl/praat/download_linux.html
@@ -35,23 +39,27 @@ fi
 
 # Parse out the current Praat version
 # The relevant line looks like:
+# <a href="https://github.com/praat/praat/releases/download/v6.4.48/praat6448_linux-intel64.tar.gz">praat6448_linux-intel64.tar.gz</a>
 # <a href=praat6134_linux64static.tar.gz>praat6134_linux64static.tar.gz</a>
-PRAAT_LINE=`grep -P -m 1 -o '<a href=praat\d+_linux64static.tar.gz>' download_linux.html`
-# the line contains something of the form:
-# "64-bit edition: <a href=praat6054_linux64.tar.gz>"
-PRAAT_LINE=${PRAAT_LINE//_*/} # zap "_linux64..." blah blah
-CURRENT_PRAAT_VERSION=${PRAAT_LINE//*praat/} # squash blah blah "...praat"
-unset PRAAT_LINE
-
+PRAAT_LINE=$(grep -P -m 1 -o '<a href="https://github.com/praat/praat/releases/download/v\d+.\d+.\d+/praat\d+_linux-intel64.tar.gz">' download_linux.html)
 rm download_linux.html
+FRONT=${PRAAT_LINE%\/praat*}  # remove "/praatBLAH_linux..." from end.
+VNUM=${FRONT##*v}
+CURRENT_PRAAT_VERSION=${VNUM//./}  # remove dots
+
+unset PRAAT_LINE FRONT
+
+# rm download_linux.html
+
+echo -e "PRAAT_VERSION -> ${PRAAT_VERSION}\nCURRENT_PRAAT_VERSION -> ${CURRENT_PRAAT_VERSION}\n"
 
 # If the available version is the same, bail.
 if [[ $CURRENT_PRAAT_VERSION == $PRAAT_VERSION ]]; then
 	echo "Your installed version is current: $PRAAT_VERSION"
 else
 	# Otherwise, grab the Praat tarball
-	TARBALL="praat${CURRENT_PRAAT_VERSION}_linux64.tar.gz"
-	wget http://www.fon.hum.uva.nl/praat/$TARBALL
+	TARBALL="praat${CURRENT_PRAAT_VERSION}_linux-intel64.tar.gz"
+	wget https://github.com/praat/praat/releases/download/v${VNUM}/$TARBALL
 
 	# Untar
 	tar xvfz $TARBALL
